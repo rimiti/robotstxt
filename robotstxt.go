@@ -1,3 +1,8 @@
+// Package robotstxt parses robots.txt files
+//
+// Aims to follow the Google robots.txt specification, see:
+// https://developers.google.com/search/reference/robots_txt
+// for more information.
 package robotstxt
 
 import (
@@ -6,14 +11,14 @@ import (
   "strconv"
   "strings"
   "time"
-
   "golang.org/x/net/idna"
 )
 
 type rule struct {
-  isAllowed bool
-  path      string
-  pattern   *regexp.Regexp
+  isAllowed  bool
+  addAllowed bool
+  path       string
+  pattern    *regexp.Regexp
 }
 
 type group struct {
@@ -266,6 +271,26 @@ func (r *RobotsTxt) IsAllowed(userAgent string, urlStr string) (result bool, err
     result = group.isAllowed(userAgent, u.Path)
   } else if group, ok := r.groups["*"]; ok {
     result = group.isAllowed(userAgent, u.Path)
+  }
+
+  return
+}
+
+// Add specified path
+func (r *RobotsTxt) AddAllowed(userAgent string, urlStr string) (result bool, err error) {
+  u, err := parseAndNormalizeURL(urlStr)
+  if err != nil {
+    return
+  }
+
+  if u.Scheme != r.url.Scheme || u.Host != r.url.Host {
+    err = &InvalidHostError{}
+    return
+  }
+
+  allowed, _ := r.IsAllowed(userAgent, urlStr)
+  if !allowed {
+    println("Url (" + urlStr + ") already allowed")
   }
 
   return
