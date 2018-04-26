@@ -1,22 +1,23 @@
-package example
+package main
 
 import (
   "log"
-  "github.com/rimiti/robotstxt"
+  . ".."
+  //. "github.com/rimiti/robotstxt"
   "strings"
 )
 
 func main() {
-  url := "http://www.example.com/robots.txt"
+  url := "https://www.clicrdv.com/robots.txt"
   contents := `
-        User-agent: *
-        Disallow: /dir/
-        Disallow: /test.html
-        Allow: /dir/test.html
-        Allow: /test.html
-        Crawl-delay: 1
-        Sitemap: http://example.com/sitemap.xml
-        Host: example.com
+        User-Agent: *
+        Disallow: /map/
+        Disallow: /404
+        Disallow: /422
+        Disallow: /500
+        Disallow: /api/
+        Disallow: /images/site3/logos-clients/
+        Sitemap: https://www.clicrdv.com/fr/sitemap_index.xml        
     `
 
   robots, err := Parse(contents, url)
@@ -24,22 +25,24 @@ func main() {
     log.Fatalln(err.Error())
   }
 
-  allowed, _ := robots.IsAllowed("Browser-Bot/1.0", "http://www.example.com/test.html")
+  allowed, _ := robots.IsAllowed("Browser-Bot/1.0", "http://www.clicrdv.com/test.html")
   if !allowed {
     println("Not allowed to crawl: /test.html")
   }
 
-  allowed, _ := robots.IsAllowed("Browser-Bot/1.0", "http://www.example.com/dir/test.html")
+  allowed, _ = robots.IsAllowed("Browser-Bot/1.0", "http://www.clicrdv.com/dir/test.html")
   if allowed {
     println("Allowed to crawl: /dir/test.html")
   }
 
-  // 1
-  println("Crawl delay: " + robots.CrawlDelay("Browser-Bot/1.0"))
+  added, _ := robots.AddAllowed("Browser-Bot/1.0", "http://www.clicrdv.com/dir/test.html")
+  if !added {
+    println("/dir/test.html allowed")
+  }
 
-  // [http://example.com/sitemap.xml]
+  // [http://clicrdv.com/sitemap.xml]
   println("Sitemaps: " + strings.Join(robots.Sitemaps(), ","))
 
-  // example.com
+  // clicrdv.com
   println("Preferred host: " + robots.Host())
 }
