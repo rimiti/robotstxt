@@ -1,22 +1,10 @@
 package robotstxt
 
 import (
-  //. "github.com/onsi/ginkgo"
-  //. "github.com/onsi/gomega"
+  "reflect"
   "testing"
   "time"
-  "reflect"
 )
-
-//var _ = Describe("Parser", func() {
-//  Describe("Make an parser expression", func() {
-//    Context("smile", func() {
-//      It("should result :)", func() {
-//        Expect(true).To(true)
-//      })
-//    })
-//  })
-//})
 
 func testRobots(t *testing.T, contents string, url string, allowed []string, disallowed []string) {
   robots, _ := Parse(contents, url)
